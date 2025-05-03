@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flex-o-Meter 3.0</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #1a1a1d;
+      --accent: #00ffc3;
+      --meter-bg: #2e2e33;
+      --meter-grad: linear-gradient(90deg, #555 0%, #00ffc3 60%, #ff2975 100%);
+      --shadow: rgba(0, 255, 195, 0.3);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: #eaeaea;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+    }
+    #arm {
+      width: 220px;
+      height: 220px;
+      position: relative;
+      transform-origin: bottom center;
+      filter: drop-shadow(0 0 15px var(--accent));
+      transition: filter 0.3s ease;
+    }
+    #arm-image {
+      width: 100%;
+      height: 100%;
+      background-color: #eaeaea;
+      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M510.8 190.3c-3.1-4.4-9.2-5.4-13.6-2.3l-58.4 41c-5.6-24.2-19.7-44.7-38.8-56.3l34.4-53.6c2.9-4.6 1.6-10.7-3-13.6s-10.7-1.6-13.6 3l-34.7 54c-10.2-3.5-21.1-5.4-32.5-5.4c-16.4 0-31.8 3.9-45.5 10.7l-78.9-116.9c-2.9-4.4-8.8-5.7-13.3-2.8c-4.5 2.9-5.8 8.8-2.8 13.3l78.4 116.2c-20.3 15.9-35 39-40.2 65.7l-74.9-17c-5.2-1.2-10.3 2.1-11.5 7.3c-1.2 5.2 2.1 10.3 7.3 11.5l75 17c3.6 40.6 30.8 74.3 67.4 88v111c0 5.3 4.3 9.6 9.6 9.6s9.6-4.3 9.6-9.6V355.9c17.8-11.4 32.6-28.4 41.2-48.5l58.4 41c4.4 3.1 10.5 2.1 13.6-2.3c3.1-4.4 2.1-10.5-2.3-13.6L388 300c8.3-28.8 2.2-60.5-17.6-84.1l63.1-44.3c4.4-3.1 5.5-9.2 2.3-13.6c-3.1-4.4-9.2-5.4-13.6-2.3l-62.7 44c-15.8-11.5-35.1-18.4-56-18.4s-40.2 6.9-56 18.4l-19.4-13.6c-4.4-3.1-10.5-2.1-13.6 2.3c-3.1 4.4-2.1 10.5 2.3 13.6l19.6 13.8c-19.9 23.6-26 55.3-17.6 84.1l-24.4 17.1c-4.4 3.1-5.5 9.2-2.3 13.6c1.9 2.7 4.9 4.1 8 4.1c1.9 0 3.9-0.6 5.6-1.8l24.5-17.2c15.3 36 50.8 61.3 92.4 61.3s77-25.3 92.4-61.3l40.2 28.2c1.7 1.2 3.7 1.8 5.6 1.8c3.1 0 6.1-1.4 8-4.1c3.1-4.4 2.1-10.5-2.3-13.6L388 300z"/></svg>');
+      mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+    }
+    #meter-container {
+      width: 75%;
+      height: 35px;
+      background: var(--meter-bg);
+      border-radius: 20px;
+      margin: 25px 0;
+      overflow: hidden;
+      box-shadow: 0 0 10px var(--shadow);
+      position: relative;
+    }
+    #meter-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--meter-grad);
+      transition: width 0.05s linear;
+    }
+    #meter-shine {
+      position: absolute;
+      top: 0;
+      right: -150px;
+      width: 150px;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shine 2s infinite;
+      animation-play-state: paused;
+      opacity: 0;
+    }
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(500%); }
+    }
+    @keyframes shake {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(-5px, -5px) rotate(-1deg); }
+      50% { transform: translate(5px, 5px) rotate(1deg); }
+      75% { transform: translate(-5px, 5px) rotate(-0.5deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+    @keyframes intenseShake {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      10% { transform: translate(-10px, -8px) rotate(-2deg); }
+      30% { transform: translate(10px, 12px) rotate(2deg); }
+      50% { transform: translate(-7px, 10px) rotate(-1deg); }
+      70% { transform: translate(9px, -8px) rotate(1.5deg); }
+      90% { transform: translate(-8px, 7px) rotate(-1.5deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+    @keyframes rainbow {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+    @keyframes glow {
+      0% { box-shadow: 0 0 10px var(--shadow); }
+      50% { box-shadow: 0 0 30px var(--shadow), 0 0 50px var(--accent); }
+      100% { box-shadow: 0 0 10px var(--shadow); }
+    }
+    @keyframes intenseglow {
+      0% { box-shadow: 0 0 20px var(--shadow); }
+      25% { box-shadow: 0 0 40px #ff2975, 0 0 80px #ff2975; }
+      50% { box-shadow: 0 0 60px #00ffc3, 0 0 120px #00ffc3; }
+      75% { box-shadow: 0 0 40px #f700ff, 0 0 80px #f700ff; }
+      100% { box-shadow: 0 0 20px var(--shadow); }
+    }
+    @keyframes rotateHue {
+      0% { filter: hue-rotate(0deg) brightness(1); }
+      25% { filter: hue-rotate(90deg) brightness(1.2); }
+      50% { filter: hue-rotate(180deg) brightness(1.4); }
+      75% { filter: hue-rotate(270deg) brightness(1.2); }
+      100% { filter: hue-rotate(360deg) brightness(1); }
+    }
+    @keyframes superPulse {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.1); }
+      60% { transform: scale(1.15); }
+      80% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    #status {
+      font-size: 1.6rem;
+      font-weight: 600;
+      text-shadow: 1px 1px 4px #000;
+      min-height: 2em;
+      text-align: center;
+      width: 80%;
+      transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+    }
+    
+    .ultimate-text {
+      font-size: 2rem;
+      font-weight: 800;
+      text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+      letter-spacing: 2px;
+    }
+    .particles-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .instructions {
+      position: absolute;
+      bottom: 20px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="particles-container" id="particles"></div>
+  <div id="arm">
+    <div id="arm-image"></div>
+  </div>
+  <div id="meter-container">
+    <div id="meter-fill"></div>
+    <div id="meter-shine"></div>
+  </div>
+  <div id="status">Flex Your Arms!</div>
+  <div class="instructions">Flex for the EEG | Press ESC to reset</div>
+  
+  <script>
+    let power = 0;
+    let velocity = 0;
+    const maxPower = 100;
+    const accel    = 0.0045;  // Drastically reduced acceleration for extremely slow buildup
+    const decel    = 0.009;   // Roll-back force when released
+    const friction = 0.006;   // Reduced drag for smoother movement
+    const maxVel   = 0.7;     // Much lower top speed for more control
+    let holding = false;
+    let currentPhrase = 0;
+    let particleTimer = null;
+    
+    const meter  = document.getElementById('meter-fill');
+    const meterShine = document.getElementById('meter-shine');
+    const arm    = document.getElementById('arm');
+    const armImage = document.getElementById('arm-image');
+    const status = document.getElementById('status');
+    const particles = document.getElementById('particles');
+    
+    const phrases = [
+      {th: 0, txt: 'Flex Your Arms!', color: '#eaeaea'},
+      {th: 5, txt: 'Warming up...', color: '#80ffea'},
+      {th: 12, txt: 'Barely Trying', color: '#a0f0ff'},
+      {th: 20, txt: 'Getting Started', color: '#80ff95'},
+      {th: 28, txt: 'Gambatte!', color: '#80ff80'},
+      {th: 37, txt: 'Not Bad!', color: '#c0ff66'},
+      {th: 46, txt: 'Feel the Burn!', color: '#b3ff66'},
+      {th: 55, txt: 'Can You Even?!', color: '#ffcd44'},
+      {th: 64, txt: 'Power Rising!', color: '#ffa644'},
+      {th: 73, txt: 'Mega Flex!', color: '#ff7e33'},
+      {th: 82, txt: 'POWER OVERLOAD!', color: '#ff5500'},
+      {th: 90, txt: 'SAVAGE MODE!', color: '#ff2975'},
+      {th: 96, txt: 'BEYOND HUMAN!', color: '#f700ff'},
+      {th: 99, txt: 'ULTIMATE STRONG!!!', color: '#ff00ff'}
+    ];
+
+    // Initialize arm color
+    armImage.style.backgroundColor = phrases[0].color;
+
+    function createParticle(x, y, size, color) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+      particle.style.left = x + 'px';
+      particle.style.top = y + 'px';
+      
+      // Special effects for higher power levels
+      if (power >= 90) {
+        particle.style.animation = 'rainbow 1s infinite linear';
+        // Star shape for highest levels
+        if (power >= 96) {
+          particle.style.boxShadow = `0 0 ${size/2}px ${color}`;
+          // Random particle shapes at highest levels
+          if (Math.random() < 0.3) {
+            const sides = Math.floor(Math.random() * 4) + 3; // 3 to 6 sides
+            particle.style.borderRadius = Math.random() < 0.5 ? '50%' : `${Math.floor(Math.random() * 50)}%`;
+          }
+        }
+      } else {
+        particle.style.background = color;
+      }
+      
+      particles.appendChild(particle);
+      
+      // Animate the particle
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 2 + Math.random() * (power > 90 ? 8 : 4);
+      const xVel = Math.cos(angle) * speed;
+      const yVel = Math.sin(angle) * speed;
+      const lifetime = 1000 + Math.random() * (power > 90 ? 2000 : 1000);
+      
+      let startTime = performance.now();
+      
+      function animateParticle(timestamp) {
+        const elapsed = timestamp - startTime;
+        if (elapsed > lifetime) {
+          particle.remove();
+          return;
+        }
+        
+        const progress = elapsed / lifetime;
+        const x = parseFloat(particle.style.left) + xVel;
+        const y = parseFloat(particle.style.top) + yVel;
+        
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.opacity = 1 - progress;
+        
+        requestAnimationFrame(animateParticle);
+      }
+      
+      // Start with fade in
+      particle.style.opacity = 0;
+      setTimeout(() => {
+        particle.style.opacity = 1;
+        requestAnimationFrame(animateParticle);
+      }, 10);
+    }
+    
+    function emitParticles() {
+      // Get position of the arm for particles
+      const rect = arm.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      // Increase particle count based on power level
+      const particleCount = power < 50 ? 4 : 
+                           power < 70 ? 6 : 
+                           power < 90 ? 10 : 15;
+      
+      for (let i = 0; i < particleCount; i++) {
+        // Particles get larger at higher power levels
+        const size = power < 50 ? 3 + Math.random() * 8 :
+                    power < 80 ? 5 + Math.random() * 10 :
+                    8 + Math.random() * 15;
+                    
+        // Use color based on current power level
+        let color = phrases[0].color;
+        for (let p of phrases) {
+          if (power >= p.th) color = p.color;
+        }
+        
+        // Spread particles further at higher levels
+        const spread = power < 50 ? 100 : 
+                      power < 80 ? 150 : 200;
+        
+        createParticle(
+          centerX + (Math.random() - 0.5) * spread, 
+          centerY + (Math.random() - 0.5) * spread, 
+          size, 
+          color
+        );
+      }
+    }
+    
+    function updatePhrase() {
+      let newPhrase = 0;
+      for (let i = 0; i < phrases.length; i++) {
+        if (power >= phrases[i].th) {
+          newPhrase = i;
+        }
+      }
+      
+      if (newPhrase !== currentPhrase) {
+        // Transition animation
+        status.style.transform = 'translateY(-10px) scale(0.95)';
+        status.style.opacity = 0.5;
+        
+        setTimeout(() => {
+          status.textContent = phrases[newPhrase].txt;
+          status.style.color = phrases[newPhrase].color;
+          armImage.style.backgroundColor = phrases[newPhrase].color;
+          
+          // Apply special styling to higher level texts
+          if (newPhrase >= 12) {
+            status.classList.add('ultimate-text');
+            status.style.textShadow = `0 0 15px ${phrases[newPhrase].color}, 0 0 30px ${phrases[newPhrase].color}`;
+            
+            // Add random flashing at ultimate level
+            if (newPhrase >= 13) {
+              let flashCount = 0;
+              const maxFlashes = 10;
+              const flashInterval = setInterval(() => {
+                if (flashCount >= maxFlashes) {
+                  clearInterval(flashInterval);
+                  return;
+                }
+                document.body.style.background = flashCount % 2 === 0 ? 
+                  phrases[newPhrase].color + '22' : 'var(--bg)';
+                flashCount++;
+              }, 100);
+            }
+          } else if (newPhrase >= 10) {
+            status.classList.add('savage-text');
+            status.classList.remove('ultimate-text');
+            status.style.textShadow = `0 0 8px ${phrases[newPhrase].color}, 0 0 16px ${phrases[newPhrase].color}`;
+          } else {
+            status.classList.remove('ultimate-text', 'savage-text');
+            status.style.textShadow = '1px 1px 4px #000';
+          }
+          
+          status.style.transform = 'translateY(0) scale(1)';
+          status.style.opacity = 1;
+          
+          // Emit burst of particles on phrase change
+          for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+              const rect = status.getBoundingClientRect();
+              createParticle(
+                rect.left + Math.random() * rect.width, 
+                rect.top + Math.random() * rect.height, 
+                4 + Math.random() * 8, 
+                phrases[newPhrase].color
+              );
+            }, i * 20);
+          }
+          
+          // Extra effects for high power levels
+          if (newPhrase >= 5) {
+            const pulseSpeed = newPhrase >= 11 ? '0.3s' : 
+                              newPhrase >= 8 ? '0.5s' : 
+                              newPhrase >= 6 ? '0.7s' : '0.9s';
+            arm.style.animation = `pulse ${pulseSpeed} infinite`;
+          } else {
+            arm.style.animation = 'none';
+          }
+          
+          // Meter shine effect intensifies with level
+          if (newPhrase >= 5) {
+            meterShine.style.opacity = Math.min(0.3 + (newPhrase * 0.08), 1);
+            meterShine.style.animationPlayState = 'running';
+            
+            // Glow intensity increases with level
+            const glowIntensity = 15 + (newPhrase * 4);
+            arm.style.filter = `drop-shadow(0 0 ${glowIntensity}px ${phrases[newPhrase].color})`;
+            
+            // Add special effects at higher levels
+            if (newPhrase >= 10) { // Power Overload and above
+              armImage.style.animation = 'rainbow 3s infinite linear';
+              
+              if (newPhrase >= 12) { // Beyond Human
+                armImage.style.animation = 'rotateHue 2s infinite linear';
+                arm.style.animation = 'superPulse 0.8s infinite';
+                
+                if (newPhrase >= 13) { // Ultimate Strong
+                  // Create explosive background effect
+                  document.body.style.transition = 'background 0.3s ease';
+                  document.body.style.background = `radial-gradient(circle, var(--bg) 50%, ${phrases[newPhrase].color}33 100%)`;
+                }
+              }
+            } else {
+              armImage.style.animation = 'none';
+              document.body.style.background = 'var(--bg)';
+            }
+          } else {
+            meterShine.style.opacity = 0;
+            meterShine.style.animationPlayState = 'paused';
+            arm.style.filter = `drop-shadow(0 0 15px var(--accent))`;
+            armImage.style.animation = 'none';
+            document.body.style.background = 'var(--bg)';
+          }
+          
+        }, 150);
+        
+        currentPhrase = newPhrase;
+      }
+    }
+    
+    function update() {
+      // 1) accelerate or brake
+      if (holding) velocity += accel;
+      else velocity -= decel;
+      
+      // 2) apply friction
+      velocity *= (1 - friction);
+      
+      // 3) clamp velocity
+      velocity = Math.max(-maxVel, Math.min(maxVel, velocity));
+      
+      // 4) update power
+      power += velocity;
+      if (power > maxPower) { power = maxPower; velocity = 0; }
+      if (power < 0) { power = 0; velocity = 0; }
+      
+      // 5) render meter and arm
+      meter.style.width = power + '%';
+      arm.style.transform = `rotate(${-power * 0.3}deg)`;
+      
+      // Apply intense effects based on power level
+      if (power >= 80) {
+        document.body.style.animation = 'shake 0.3s infinite';
+        
+        if (power >= 90) {
+          meter.style.animation = 'rainbow 2s infinite linear';
+          
+          if (power >= 96) {
+            // Intense shake at "BEYOND HUMAN" level
+            document.body.style.animation = 'intenseShake 0.2s infinite';
+            document.getElementById('meter-container').style.animation = 'glow 0.5s infinite';
+            
+            if (power >= 99) {
+              // Maximum intensity at ultimate level
+              document.getElementById('meter-container').style.animation = 'intenseglow 0.8s infinite';
+              
+              // Create explosive particles occasionally at max level
+              if (Math.random() < 0.05) {
+                const numBurstParticles = 30;
+                for (let i = 0; i < numBurstParticles; i++) {
+                  setTimeout(() => {
+                    const bodyRect = document.body.getBoundingClientRect();
+                    createParticle(
+                      Math.random() * bodyRect.width, 
+                      Math.random() * bodyRect.height, 
+                      5 + Math.random() * 20, 
+                      phrases[phrases.length-1].color
+                    );
+                  }, i * 10);
+                }
+              }
+            }
+          }
+        }
+      } else if (power >= 64) {
+        // Medium power effects
+        document.body.style.animation = 'none';
+        meter.style.animation = 'glow 1.5s infinite';
+        document.getElementById('meter-container').style.animation = 'none';
+      } else {
+        // Reset all animations at lower levels
+        document.body.style.animation = 'none';
+        meter.style.animation = 'none';
+        document.getElementById('meter-container').style.animation = 'none';
+      }
+      
+      // 6) update phrase if needed
+      updatePhrase();
+      
+      // 7) Emit particles when flexing hard
+      if (holding && power > 30 && !particleTimer) {
+        particleTimer = setInterval(emitParticles, 200);
+      } else if (!holding || power <= 30) {
+        clearInterval(particleTimer);
+        particleTimer = null;
+      }
+      
+      requestAnimationFrame(update);
+    }
+    
+    update();
+
+    let socket = new WebSocket("ws://localhost:8000/ws");
+    socket.onmessage = (event) => {
+      // console.log("Prediction received:", event.data);
+      const { state, probability } = JSON.parse(event.data)
+      console.log(probability)
+      if (state === 'flexing') {
+        holding = true;
+      }
+      if (state === 'resting') {
+        holding = false;
+      }
+    };
+    /*
+    window.addEventListener('keydown', e => {
+      if (e.code === 'Space') { 
+        holding = true; 
+        e.preventDefault(); 
+      } else if (e.code === 'Escape') {
+        // Reset functionality
+        power = 0;
+        velocity = 0;
+        updatePhrase();
+      }
+    });
+    
+    window.addEventListener('keyup', e => {
+      if (e.code === 'Space') holding = false;
+    });
+
+    // Touch support
+    document.body.addEventListener('touchstart', () => {
+      holding = true;
+    });
+    
+    document.body.addEventListener('touchend', () => {
+      holding = false;
+    });
+     */
+  </script>
+</body>
+</html>

@@ -10,6 +10,8 @@ from joblib import dump
 
 from preprocess import load_dataset
 
+model_file = 'eeg_svm_model_csp_only_home_rest_data.joblib'
+
 def train_svm_model(base_dir, class_mapping, normalize_len=True):
     # Load the dataset
     print("Loading and processing dataset...")
@@ -79,8 +81,8 @@ def train_svm_model(base_dir, class_mapping, normalize_len=True):
     print("Confusion matrix saved as 'confusion_matrix.png'")
     
     # Save the model
-    dump(best_model, 'eeg_svm_model.joblib')
-    print("Model saved as 'eeg_svm_model.joblib'")
+    dump(best_model, model_file)
+    print(f"Model saved as {model_file}")
     
     return best_model
 
@@ -103,15 +105,18 @@ if __name__ == "__main__":
         # 'left_hand_w_finger_movement': 'left_hand',
         # 'right_hand': 'right_hand',
         # 'right_hand_w_finger_movement': 'right_hand',
-        # 'relaxed_state': 'resting',
-        # 'meditative_state': 'resting',
         'both_hand': 'flexing',
         'left_hand': 'flexing',
         # 'left_hand_w_finger_movement': 'flexing',
         'right_hand': 'flexing',
         # 'right_hand_w_finger_movement': 'flexing',
+        #'both_hand': 'both_hand',
         'relaxed_state': 'resting',
-        'meditative_state': 'resting'
+        'meditative_state': 'resting',
+        #'home_right': 'flexing',
+        #'home_left': 'flexing',
+        #'home_both': 'flexing',
+        'home_rest': 'resting',
     }
 
     # Train the SVM model
